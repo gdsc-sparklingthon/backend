@@ -103,6 +103,7 @@ export class ChildService {
   }
 
   async postAnswerRequest(
+    childId: number,
     questionId: number,
     postAnswerRequest: PostAnswerRequest,
   ): Promise<PostAnswerResponse> {
