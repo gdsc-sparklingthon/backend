@@ -127,7 +127,10 @@ export class ChildService {
       };
     }
 
-    const survey = question.survey;
+    const survey = await this.surveyRepository.findOne({
+      where: { id: question.survey.id },
+      relations: ['result'],
+    });
 
     const point = await this.gptService.getPoint(
       question.question,
@@ -162,7 +165,7 @@ export class ChildService {
     }
 
     const answers = await this.answerRepository.findBy({
-      question,
+      child,
     });
 
     const totalSum = answers.reduce((sum, answer) => sum + answer.point, 0);
@@ -178,15 +181,19 @@ export class ChildService {
     } else {
       result = '매우 심한 우울 상태';
     }
-    await this.resultRepository.save({
-      point: totalSum,
-      result,
-      createdAt: new Date(),
-      doneAt: new Date(),
-      status: 'DONE',
-      progress: 100,
-      survey: question.survey,
-    });
+
+    await this.resultRepository.update(
+      { id: survey.result.id },
+      {
+        point: totalSum,
+        result,
+        createdAt: new Date(),
+        doneAt: new Date(),
+        status: 'DONE',
+        progress: 100,
+        survey: question.survey,
+      },
+    );
 
     const firstTemplate = await this.templateRepository.findOne({
       where: { id: 1 },
