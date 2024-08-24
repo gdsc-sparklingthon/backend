@@ -10,9 +10,12 @@ import { Result } from './entities/result.entity';
 import { Question } from './entities/question.entity';
 import { Parent } from './entities/parent.entity';
 import { Child } from './entities/child.entity';
+import { GptModule } from './modules/gpt/gpt.module';
+import { GptController } from './modules/gpt/gpt.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { ParentModule } from './modules/parent/parent.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { ChildModule } from './modules/child/child.module';
 
 @Module({
   imports: [
@@ -30,11 +33,13 @@ import { ProfileModule } from './modules/profile/profile.module';
       entities: [Answer, Child, Parent, Question, Result, Survey, Template],
       synchronize: Boolean(process.env.DB_SYNCHRONIZE),
     }),
+    GptModule,
     AuthModule,
     ParentModule,
     ProfileModule,
+    ChildModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, GptController],
   providers: [AppService],
 })
 export class AppModule {}

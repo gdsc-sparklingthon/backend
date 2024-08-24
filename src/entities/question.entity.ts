@@ -1,8 +1,9 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Survey } from './survey.entity';
@@ -17,12 +18,15 @@ export class Question {
   @Column()
   question: string;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
   @ManyToOne(() => Survey, (survey) => survey.questions)
   survey: Survey;
 
   @ManyToOne(() => Template, (template) => template.questions)
   template: Template;
 
-  @OneToMany(() => Answer, (answer) => answer.question)
+  @OneToOne(() => Answer, (answer) => answer.question)
   answers: Answer[];
 }
