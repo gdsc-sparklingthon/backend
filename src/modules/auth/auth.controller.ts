@@ -1,11 +1,14 @@
 import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginRequest, LoginResponse } from './dto/login.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 class RegisterDto {
+    @ApiProperty({ description: 'The name of the user' })
     name: string;
+    @ApiProperty({ description: 'The email of the user' })
     email: string;
+    @ApiProperty({ description: 'The password of the user' })
     password: string;
 }
 
@@ -29,3 +32,4 @@ export class AuthController {
     return this.authService.login(loginRequest);
   }
 }
+
