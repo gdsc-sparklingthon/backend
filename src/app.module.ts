@@ -13,6 +13,7 @@ import { Child } from './entities/child.entity';
 import { GptModule } from './modules/gpt/gpt.module';
 import { GptController } from './modules/gpt/gpt.controller';
 import { AuthModule } from './modules/auth/auth.module';
+import { ChildModule } from './modules/child/child.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     GptModule,
     AuthModule,
+    ChildModule,
   ],
   controllers: [AppController, GptController],
   providers: [AppService],

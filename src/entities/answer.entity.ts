@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Question } from './question.entity';
+import { Child } from './child.entity';
 
 @Entity()
 export class Answer {
@@ -12,9 +19,12 @@ export class Answer {
   @Column()
   answer: string;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => Question, (question) => question.answers)
   question: Question;
+
+  @ManyToOne(() => Child, (child) => child.answers)
+  child: Child;
 }

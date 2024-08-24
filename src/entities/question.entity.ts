@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToOne,
@@ -16,6 +17,9 @@ export class Question {
 
   @Column()
   question: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @ManyToOne(() => Survey, (survey) => survey.questions)
   survey: Survey;

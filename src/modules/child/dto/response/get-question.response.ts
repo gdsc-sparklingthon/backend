@@ -5,4 +5,8 @@ export class GetQuestionResponse {
   @ApiProperty()
   @IsString()
   question: string;
+
+  @ApiProperty()
+  @IsString()
+  nextQuestionId: number;
 }

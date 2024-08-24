@@ -18,7 +18,8 @@ export class GptService {
           {
             role: 'system',
             content:
-              '다음 아이 이름을 반갑게 인사해주세요: ' + name.substring(1),
+              '당신은 5세에서 9세 사이의 아이들을 돕는 친근하고 공감적인 음성 어시스턴트입니다. 다음 친구 이름을 반갑게 환영해주세요: ' +
+              name.substring(1),
           },
         ],
         temperature: 0.7,

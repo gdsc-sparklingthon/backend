@@ -6,11 +6,11 @@ import { PostAnswerRequest } from './dto/request/post-answer.request';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from '../../entities/answer.entity';
 import { Repository } from 'typeorm';
-import { Survey } from '../../entities/survey.entity';
 import { Question } from '../../entities/question.entity';
 import { Template } from '../../entities/template.entity';
 import { Child } from '../../entities/child.entity';
 import { Result } from '../../entities/result.entity';
+import { Survey } from '../../entities/survey.entity';
 
 @Injectable()
 export class ChildService {
@@ -18,14 +18,16 @@ export class ChildService {
     private readonly gptService: GptService,
     @InjectRepository(Answer)
     private readonly answerRepository: Repository<Answer>,
-    @InjectRepository(Survey)
+    @InjectRepository(Question)
     private readonly questionRepository: Repository<Question>,
     @InjectRepository(Template)
     private readonly templateRepository: Repository<Template>,
-    @InjectRepository(Survey)
+    @InjectRepository(Child)
     private readonly childRepository: Repository<Child>,
     @InjectRepository(Result)
     private readonly resultRepository: Repository<Result>,
+    @InjectRepository(Survey)
+    private readonly surveyRepository: Repository<Survey>,
   ) {}
 
   async getFirstResponse(childId: number): Promise<GetQuestionResponse> {
@@ -34,7 +36,70 @@ export class ChildService {
     });
 
     const firstQuestion = await this.gptService.getFirstResponse(child.name);
-    return { question: firstQuestion };
+
+    const survey = await this.surveyRepository.findOne({
+      where: { child },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    if (survey == null) {
+      const result = await this.resultRepository.save({
+        status: 'NOT DONE',
+      });
+
+      const survey = await this.surveyRepository.save({
+        child,
+      });
+
+      const nextTemplate = await this.templateRepository.findOne({
+        where: { id: 1 },
+      });
+
+      const nextQuestion = await this.questionRepository.save({
+        question: nextTemplate.content,
+        template: nextTemplate,
+        survey,
+      });
+
+      return {
+        question: firstQuestion,
+        nextQuestionId: nextQuestion.id,
+      };
+    }
+
+    const answer = await this.answerRepository.findOneBy({ child });
+
+    if (answer != null) {
+      const nextTemplate = await this.templateRepository.findOne({
+        where: { id: answer.question.template.id + 1 },
+      });
+
+      const nextQuestion = await this.questionRepository.save({
+        question: nextTemplate.content,
+        survey,
+      });
+      return {
+        question: firstQuestion,
+        nextQuestionId: nextQuestion.id,
+      };
+    }
+
+    const nextTemplate = await this.templateRepository.findOne({
+      where: { id: 1 },
+    });
+
+    const nextQuestion = await this.questionRepository.save({
+      question: nextTemplate.content,
+      template: nextTemplate,
+      survey,
+    });
+
+    return {
+      question: firstQuestion,
+      nextQuestionId: nextQuestion.id,
+    };
   }
 
   async postAnswerRequest(
@@ -43,26 +108,51 @@ export class ChildService {
   ): Promise<PostAnswerResponse> {
     const question = await this.questionRepository.findOne({
       where: { id: questionId },
+      relations: ['template', 'survey', 'answers'],
     });
+
+    if (postAnswerRequest.isFirst) {
+      const nextTemplateId = question.template.id + 1;
+      const nextTemplate = await this.templateRepository.findOne({
+        where: { id: nextTemplateId },
+      });
+      const nextQuestion = await this.questionRepository.save({
+        question: nextTemplate.content,
+        survey: question.survey,
+        template: nextTemplate,
+      });
+      return {
+        question: nextTemplate.content,
+        questionId: nextQuestion.id,
+      };
+    }
+
+    const survey = question.survey;
 
     const point = await this.gptService.getPoint(
       question.question,
       postAnswerRequest.answer,
     );
 
+    const child = await this.childRepository.findOneBy({
+      id: 1,
+    });
+
     await this.answerRepository.save({
       point: Number(point),
       answer: postAnswerRequest.answer,
-      createdAt: new Date(),
       question: question,
+      child,
     });
 
-    if (question.template.id < 27) {
+    if (question.template.id < 26) {
       const nextTemplate = await this.templateRepository.findOne({
         where: { id: question.template.id + 1 },
       });
       const nextQuestion = await this.questionRepository.save({
         question: nextTemplate.content,
+        survey,
+        template: nextTemplate,
       });
       return {
         point: Number(point),
@@ -103,7 +193,9 @@ export class ChildService {
     });
     const nextQuestion = await this.questionRepository.save({
       question: firstTemplate.content,
+      survey,
     });
+
     return {
       point: Number(point),
       question: firstTemplate.content,

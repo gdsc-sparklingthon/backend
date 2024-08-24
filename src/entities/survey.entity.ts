@@ -1,5 +1,5 @@
 import {
-  Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -15,8 +15,8 @@ export class Survey {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
   @ManyToOne(() => Child, (child) => child.surveys)
   child: Child;

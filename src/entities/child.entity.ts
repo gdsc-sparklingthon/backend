@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Parent } from './parent.entity';
 import { Survey } from './survey.entity';
+import { Answer } from './answer.entity';
 
 @Entity()
 export class Child {
@@ -33,4 +34,7 @@ export class Child {
 
   @OneToMany(() => Survey, (survey) => survey.child)
   surveys: Survey[];
+
+  @OneToMany(() => Answer, (survey) => survey.answer)
+  answers: Answer[];
 }

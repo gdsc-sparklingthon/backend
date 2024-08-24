@@ -1,4 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Survey } from './survey.entity';
 
 @Entity()
@@ -6,22 +12,22 @@ export class Result {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   result: string;
 
-  @Column()
+  @Column({ nullable: true })
   point: number;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({ nullable: true })
   doneAt: Date;
 
   @Column()
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   progress: number;
 
   @OneToOne(() => Survey, (survey) => survey.result)
