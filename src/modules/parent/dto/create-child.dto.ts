@@ -5,7 +5,7 @@ export class CreateChildDto {
   name: string;
 
   @ApiProperty({ description: 'The age of the child', example: '10' })
-  age: string;
+  age: number;
 
   @ApiProperty({ description: 'The gender of the child', example: 'Male' })
   gender: string;

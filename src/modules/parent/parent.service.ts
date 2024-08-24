@@ -15,7 +15,12 @@ export class ParentService {
     private jwtService: JwtService,
   ) {}
 
-  async registerChild(parentId: number, name: string, age: string, gender: string): Promise<string> {
+  async registerChild(
+    parentId: number,
+    name: string,
+    age: number,
+    gender: string,
+  ): Promise<string> {
     const childCode = this.generateSixDigitCode(); // 6자리 숫자 코드 생성
     const newChild = this.childRepository.create({
       name,
