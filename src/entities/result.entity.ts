@@ -7,7 +7,7 @@ export class Result {
   id: number;
 
   @Column()
-  point: string;
+  point: number;
 
   @Column()
   createdAt: Date;

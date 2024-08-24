@@ -10,6 +10,8 @@ import { Result } from './entities/result.entity';
 import { Question } from './entities/question.entity';
 import { Parent } from './entities/parent.entity';
 import { Child } from './entities/child.entity';
+import { GptModule } from './modules/gpt/gpt.module';
+import { GptController } from './modules/gpt/gpt.controller';
 
 @Module({
   imports: [
@@ -27,8 +29,9 @@ import { Child } from './entities/child.entity';
       entities: [Answer, Child, Parent, Question, Result, Survey, Template],
       synchronize: Boolean(process.env.DB_SYNCHRONIZE),
     }),
+    GptModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, GptController],
   providers: [AppService],
 })
 export class AppModule {}

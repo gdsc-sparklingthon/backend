@@ -7,7 +7,7 @@ export class Answer {
   id: number;
 
   @Column()
-  point: string;
+  point: number;
 
   @Column()
   answer: string;

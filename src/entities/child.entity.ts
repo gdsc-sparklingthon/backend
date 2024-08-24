@@ -23,7 +23,7 @@ export class Child {
   code: string;
 
   @Column()
-  age: string;
+  age: number;
 
   @Column()
   gender: string;
