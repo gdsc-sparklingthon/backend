@@ -71,6 +71,33 @@ export class ChildService {
       };
     }
 
+    const answers = await this.answerRepository.findBy({
+      question,
+    });
+
+    const totalSum = answers.reduce((sum, answer) => sum + answer.point, 0);
+
+    let result: string;
+
+    if (totalSum < 22) {
+      result = '정상';
+    } else if (totalSum < 26) {
+      result = '약간 우을 상태';
+    } else if (totalSum < 29) {
+      result = '상당한 우울 상태';
+    } else {
+      result = '매우 심한 우울 상태';
+    }
+    await this.resultRepository.save({
+      point: totalSum,
+      result,
+      createdAt: new Date(),
+      doneAt: new Date(),
+      status: 'DONE',
+      progress: 100,
+      survey: question.survey,
+    });
+
     const firstTemplate = await this.templateRepository.findOne({
       where: { id: 1 },
     });

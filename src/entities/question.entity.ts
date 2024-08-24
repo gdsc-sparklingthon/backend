@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Survey } from './survey.entity';
@@ -23,6 +23,6 @@ export class Question {
   @ManyToOne(() => Template, (template) => template.questions)
   template: Template;
 
-  @OneToMany(() => Answer, (answer) => answer.question)
+  @OneToOne(() => Answer, (answer) => answer.question)
   answers: Answer[];
 }

@@ -13,7 +13,7 @@ export class ChildController {
   @ApiOperation({ summary: '첫 질문 요청 API' })
   @Get()
   async getFirstResponse(): Promise<GetQuestionResponse> {
-    return await this.childService.getFirstResponse();
+    return await this.childService.getFirstResponse(1);
   }
 
   @ApiOperation({ summary: '답변 API' })

@@ -7,6 +7,9 @@ export class Result {
   id: number;
 
   @Column()
+  result: string;
+
+  @Column()
   point: number;
 
   @Column()
