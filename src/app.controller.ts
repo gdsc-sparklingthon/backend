@@ -7,6 +7,6 @@ export class AppController {
 
   @Get('health')
   getHealth(): string {
-    return 'health';
+    return 'healthy';
   }
 }
