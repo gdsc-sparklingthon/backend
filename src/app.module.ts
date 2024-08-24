@@ -12,6 +12,7 @@ import { Parent } from './entities/parent.entity';
 import { Child } from './entities/child.entity';
 import { GptModule } from './modules/gpt/gpt.module';
 import { GptController } from './modules/gpt/gpt.controller';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { GptController } from './modules/gpt/gpt.controller';
       synchronize: Boolean(process.env.DB_SYNCHRONIZE),
     }),
     GptModule,
+    AuthModule,
   ],
   controllers: [AppController, GptController],
   providers: [AppService],
