@@ -10,6 +10,7 @@ import { Result } from './entities/result.entity';
 import { Question } from './entities/question.entity';
 import { Parent } from './entities/parent.entity';
 import { Child } from './entities/child.entity';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Child } from './entities/child.entity';
       entities: [Answer, Child, Parent, Question, Result, Survey, Template],
       synchronize: Boolean(process.env.DB_SYNCHRONIZE),
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
