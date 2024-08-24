@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -31,5 +32,6 @@ export class Result {
   progress: number;
 
   @OneToOne(() => Survey, (survey) => survey.result)
+  @JoinColumn()
   survey: Survey;
 }
