@@ -46,11 +46,12 @@ export class ChildService {
 
     if (survey == null) {
       const result = await this.resultRepository.save({
-        status: 'NOT DONE',
+        status: 'NOT_DONE',
       });
 
       const survey = await this.surveyRepository.save({
         child,
+        result,
       });
 
       const nextTemplate = await this.templateRepository.findOne({
@@ -107,6 +108,8 @@ export class ChildService {
     questionId: number,
     postAnswerRequest: PostAnswerRequest,
   ): Promise<PostAnswerResponse> {
+    const randomValue = Math.random();
+
     const question = await this.questionRepository.findOne({
       where: { id: questionId },
       relations: ['template', 'survey', 'answers'],
@@ -122,6 +125,7 @@ export class ChildService {
         survey: question.survey,
         template: nextTemplate,
       });
+
       return {
         question: nextTemplate.content,
         questionId: nextQuestion.id,
@@ -158,6 +162,14 @@ export class ChildService {
         survey,
         template: nextTemplate,
       });
+
+      if (randomValue < 0.7) {
+        const response = await this.gptService.getResponse(
+          postAnswerRequest.answer,
+        );
+        return { question: response, questionId: nextQuestion.id };
+      }
+
       return {
         point: Number(point),
         question: nextTemplate.content,
