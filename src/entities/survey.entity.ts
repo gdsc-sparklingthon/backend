@@ -1,6 +1,7 @@
 import {
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -22,6 +23,7 @@ export class Survey {
   child: Child;
 
   @OneToOne(() => Result, (result) => result.survey)
+  @JoinColumn()
   result: Result;
 
   @OneToMany(() => Question, (question) => question.survey)
