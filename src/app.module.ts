@@ -11,6 +11,8 @@ import { Question } from './entities/question.entity';
 import { Parent } from './entities/parent.entity';
 import { Child } from './entities/child.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { ParentModule } from './modules/parent/parent.module';
+import { ProfileModule } from './modules/profile/profile.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { AuthModule } from './modules/auth/auth.module';
       synchronize: Boolean(process.env.DB_SYNCHRONIZE),
     }),
     AuthModule,
+    ParentModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
