@@ -40,4 +40,19 @@ export class ParentController {
     const childDetails = await this.parentService.getChildDetails(parseInt(childId));
     return childDetails;
   }
+
+  @Get('/child/recent')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: '가장 최근에 답변한 자식 ID 조회' })
+  async getMostRecentChildId(@Request() req): Promise<{ childId: number }> {
+    console.log(req.user);
+    const parentId = req.user.userId; // JWT 토큰에서 부모 ID 추출
+    console.log(parentId);
+    if (isNaN(parentId)) {
+        throw new Error('Invalid parent ID');
+    }
+    console.log(parentId);
+    const childId = await this.parentService.getMostRecentChildIdForParent(parentId);
+    return { childId };   
+  }
 }

@@ -1,10 +1,11 @@
 import { Injectable,NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Child } from '../../entities/child.entity';
 import { Parent } from '../../entities/parent.entity';
 import { Survey } from 'src/entities/survey.entity';
 import { Result } from 'src/entities/result.entity';
+import { Answer } from 'src/entities/answer.entity';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -18,6 +19,8 @@ export class ParentService {
     private surveyRepository: Repository<Survey>,
     @InjectRepository(Result)
     private resultRepository: Repository<Result>,
+    @InjectRepository(Answer)
+    private answerRepository: Repository<Answer>,
     private jwtService: JwtService,
   ) {}
 
@@ -86,5 +89,26 @@ export class ParentService {
       gender: child.gender,
       resultList: resultList,
     };
+  }
+
+  async getMostRecentChildIdForParent(parentId: number): Promise<number | null> {
+    console.log(parentId);
+    // Child 테이블에서 해당 parentId를 갖는 모든 child id를 가져오기
+    const children = await this.childRepository.find({ where: { parent: { id: parentId } } });
+    console.log(children);
+    if (children.length === 0) {
+      return null; // 자식이 없으면 null 반환
+    }
+    console.log(children);
+    // 모든 child id 추출
+    const childIds = children.map(child => child.id);
+    console.log(childIds);
+    // Answer 테이블에서 해당 child id들 중 가장 최근에 추가된 데이터를 찾기
+    const recentAnswer = await this.answerRepository.findOne({
+      where: { child: { id: In(childIds) } },
+      order: { createdAt: 'DESC' }, // 가장 최근에 추가된 데이터 기준으로 정렬
+    });
+    console.log(recentAnswer);
+    return recentAnswer ? recentAnswer.child.id : null; // 최근 데이터가 있으면 child id 반환, 없으면 null
   }
 }
