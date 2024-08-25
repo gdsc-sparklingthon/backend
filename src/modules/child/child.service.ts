@@ -143,7 +143,7 @@ export class ChildService {
     );
 
     const child = await this.childRepository.findOneBy({
-      id: 1,
+      id: childId,
     });
 
     await this.answerRepository.save({
