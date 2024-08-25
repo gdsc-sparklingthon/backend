@@ -153,6 +153,11 @@ export class ChildService {
       child,
     });
 
+    survey.result.point += Number(point);
+    survey.result.progress += (question.template.id / 27) * 100;
+
+    await this.surveyRepository.save(survey);
+
     if (question.template.id < 26) {
       const nextTemplate = await this.templateRepository.findOne({
         where: { id: question.template.id + 1 },
