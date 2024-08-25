@@ -1,4 +1,4 @@
-import { Injectable,NotFoundException } from '@nestjs/common';
+import { Injectable,NotFoundException,UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Child } from '../../entities/child.entity';
@@ -87,4 +87,44 @@ export class ParentService {
       resultList: resultList,
     };
   }
+
+  async validateChildOwnership(childId: number, parentId: number): Promise<void> {
+    const child = await this.childRepository.findOne({ where: { id: childId, parent: { id: parentId } } });
+    if (!child) {
+      throw new UnauthorizedException('You do not have access to this child\'s survey details.');
+    }
+  }
+
+  async getSurveyDetailsForChild(childId: number): Promise<any> {
+    // Survey 테이블에서 해당 childId를 갖는 모든 survey를 가져옵니다.
+    const surveys = await this.surveyRepository.find({ where: { child: { id: childId } } });
+
+    if (!surveys.length) {
+      throw new NotFoundException('No surveys found for this child.');
+    }
+
+    const surveyDetails = await Promise.all(
+      surveys.map(async (survey) => {
+        // Result 테이블에서 해당 surveyId와 연결된 모든 결과를 가져옵니다.
+        const results = await this.resultRepository.find({ where: { survey: { id: survey.id } } });
+        
+        // 각 결과에 대해 필요한 데이터를 리스트로 만듭니다.
+        const resultList = results.map(result => ({
+            totalPoint: (result.point ?? 0).toString(),
+            createdAt: result.createdAt,
+            doneAt: result.doneAt,
+            status: result.status,
+            progress: result.progress,
+        }));
+
+        return {
+            surveyId: survey.id,
+            results: resultList
+        };
+        })
+    );
+
+    return surveyDetails;
+  }
+
 }

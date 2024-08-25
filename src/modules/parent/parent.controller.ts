@@ -40,4 +40,20 @@ export class ParentController {
     const childDetails = await this.parentService.getChildDetails(parseInt(childId));
     return childDetails;
   }
+
+  @Get('/survey/:childId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: '특정 자식의 설문조사 세부정보 조회' })
+  async getSurveyDetails(
+    @Param('childId') childId: string,
+    @Request() req
+  ): Promise<any> {
+    const parentId = req.user.userId; // JWT 토큰에서 추출된 parentId
+
+    // 해당 childId가 요청한 부모의 자식인지 확인하는 로직 추가
+    await this.parentService.validateChildOwnership(parseInt(childId), parentId);
+
+    const surveyDetails = await this.parentService.getSurveyDetailsForChild(parseInt(childId));
+    return surveyDetails;
+  }
 }
