@@ -16,7 +16,7 @@ export class Result {
   @Column({ nullable: true })
   result: string;
 
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   point: number;
 
   @CreateDateColumn()
