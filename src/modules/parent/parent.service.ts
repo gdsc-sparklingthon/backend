@@ -5,6 +5,8 @@ import { Child } from '../../entities/child.entity';
 import { Parent } from '../../entities/parent.entity';
 import { Survey } from 'src/entities/survey.entity';
 import { Result } from 'src/entities/result.entity';
+import { Question } from 'src/entities/question.entity';
+import { Answer } from 'src/entities/answer.entity';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -18,6 +20,10 @@ export class ParentService {
     private surveyRepository: Repository<Survey>,
     @InjectRepository(Result)
     private resultRepository: Repository<Result>,
+    @InjectRepository(Question)
+    private questionRepository: Repository<Question>,
+    @InjectRepository(Answer)
+    private answerRepository: Repository<Answer>,
     private jwtService: JwtService,
   ) {}
 
@@ -125,6 +131,36 @@ export class ParentService {
     );
 
     return surveyDetails;
+  }
+
+  async getChildIdBySurveyId(surveyId: number): Promise<number> {
+    const survey = await this.surveyRepository.findOne({ where: { id: surveyId }, relations: ['child'] });
+
+    if (!survey || !survey.child) {
+      throw new NotFoundException('Survey or Child not found');
+    }
+
+    return survey.child.id;
+  }
+
+  async getSurveyAnswers(surveyId: number): Promise<any> {
+    // Survey에 연결된 질문들을 가져옵니다.
+    const questions = await this.questionRepository.find({ where: { survey: { id: surveyId } } });
+
+    // 각 질문에 대해 답변을 찾고, 답변 리스트를 구성합니다.
+    const answerList = await Promise.all(
+      questions.map(async (question) => {
+        const answer = await this.answerRepository.findOne({ where: { question: { id: question.id } } });
+
+        return {
+          surveyId: surveyId,
+          question: question.question,
+          answer: answer ? answer.answer : null,
+        };
+      })
+    );
+
+    return answerList;
   }
 
 }

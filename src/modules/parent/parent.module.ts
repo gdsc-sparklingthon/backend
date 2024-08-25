@@ -7,10 +7,12 @@ import { Child } from '../../entities/child.entity';
 import { Survey } from '../../entities/survey.entity';
 import { Result } from '../../entities/result.entity';
 import { AuthModule } from '../auth/auth.module';
+import { Question } from '../../entities/question.entity';
+import { Answer } from '../../entities/answer.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Parent, Child, Survey, Result]),
+    TypeOrmModule.forFeature([Parent, Child, Survey, Result, Question, Answer]),
     AuthModule,
   ],
   controllers: [ParentController],
